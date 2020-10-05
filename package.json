@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
+    "dev": "nodemon -r dotenv/config index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,8 +19,18 @@
   },
   "homepage": "https://github.com/bloveless/esp32-iot-desk#readme",
   "dependencies": {
+    "actions-on-google": "^2.13.0",
     "body-parser": "^1.19.0",
-    "express": "^4.17.1"
+    "cookie-parser": "^1.4.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-flash-2": "^1.0.1",
+    "express-oauth-server": "^2.0.0",
+    "express-session": "^1.17.1",
+    "morgan": "^1.10.0",
+    "mqtt": "^4.2.1",
+    "pg": "^8.3.3",
+    "pug": "^3.0.0"
   },
   "engines": {
     "node": "14.x"

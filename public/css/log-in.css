@@ -1,0 +1,34 @@
+.form-log-in {
+    width: 100%;
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+.form-log-in .checkbox {
+    font-weight: 400;
+}
+.form-log-in .form-control {
+    position: relative;
+    box-sizing: border-box;
+    height: auto;
+    padding: 10px;
+    font-size: 16px;
+}
+.form-log-in .form-control:focus {
+    z-index: 2;
+}
+.form-log-in input#inputEmail {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.form-log-in input#inputPassword {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.form-log-in button {
+    margin-bottom: 1em;
+}

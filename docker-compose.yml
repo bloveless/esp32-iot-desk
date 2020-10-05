@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:13.0
+    environment:
+      POSTGRES_DB: "esp32_iot_desk"
+      POSTGRES_USER: "esp32_iot_desk"
+      POSTGRES_PASSWORD: "89AU0GOS2tWhgz274V1mG6gg88nPws"
+    ports:
+      - 5432:5432
+    volumes:
+      - "./docker/postgres/initdb.d:/docker-entrypoint-initdb.d"
+
+  mosquitto:
+    image: eclipse-mosquitto:1.6
+    volumes:
+      - "./docker/mosquitto/mosquitto.conf:/mosquitto/conf/mosquitto.conf"
+      - mosquitto_data:/mosquitto/data
+    ports:
+      - 1883:1883
+
+  server:
+    build:
+      context: .
+      dockerfile: ./docker/server/Dockerfile
+    environment:
+      DATABASE_URL: "postgres://esp32_iot_desk:89AU0GOS2tWhgz274V1mG6gg88nPws@postgres:5432/esp32_iot_desk"
+      CLOUDMQTT_URL: "mqtt://mosquitto"
+    command: "npm run dev"
+    ports:
+      - 3000:3000
+    volumes:
+      - "./:/home/node/app"
+    depends_on:
+      - postgres
+      - mosquitto
+
+volumes:
+  mosquitto_data:
