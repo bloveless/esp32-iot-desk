@@ -211,13 +211,12 @@ module.exports.getDevicesByUserIdAndIds = (userId, deviceIds) => {
 module.exports.setDeviceHeight = (userId, deviceId, newCurrentHeight) => {
     return pool.query(
         `
-        UPDATE d
+        UPDATE devices d
         SET current_height = $1
-        FROM devices d
-        INNER JOIN users u
-            ON d.user_id = u.id
+        FROM users u
         WHERE d.id = $2
             AND u.id = $3
+            AND d.user_id = u.id
         RETURNING
              u.id AS user_id
             ,d.id AS device_id
