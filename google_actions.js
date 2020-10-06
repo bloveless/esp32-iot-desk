@@ -22,7 +22,7 @@ const updateHeight = {
 };
 
 const google_actions_app = smarthome({
-    debug: true,
+    debug: (process.env.APP_DEBUG === "true"),
 });
 
 google_actions_app.onSync(async (body, headers) => {
