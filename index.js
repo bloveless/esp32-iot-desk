@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const flash = require("express-flash-2");
 const session = require("express-session");
-const pgSession = require("connect-pg-simple")(session)();
+const pgSession = require("connect-pg-simple")(session);
 const morgan = require("morgan");
 
 const { google_actions_app } = require("./google_actions");
