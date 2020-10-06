@@ -51,9 +51,9 @@ CREATE TABLE oauth_tokens
     client_id                text                        NOT NULL,
     refresh_token            text                        NOT NULL,
     refresh_token_expires_at timestamp without time zone NOT NULL,
-    user_id                  uuid                        NOT NULL
+    user_id                  uuid                        NOT NULL,
+    revoked                  bool                        NOT NULL DEFAULT (false)
 );
-
 
 --
 -- Name: oauth_clients; Type: TABLE; Schema: public; Owner: -; Tablespace:
@@ -77,15 +77,15 @@ VALUES ('eb47ecec86884e029ac626bd5de45d92', '784bcfc776104cac85145ba834c30020',
 DROP TABLE IF EXISTS users;
 CREATE TABLE users
 (
-     id       uuid NOT NULL PRIMARY KEY
-    ,email    text NOT NULL
-    ,password text NOT NULL
+    id       uuid NOT NULL PRIMARY KEY,
+    email    text NOT NULL,
+    password text NOT NULL
 );
 
 CREATE INDEX users_email_password ON users USING btree (email, password);
 
 CREATE TABLE devices
 (
-     id      uuid NOT NULL PRIMARY KEY
-    ,user_id uuid NOT NULL
+    id      uuid NOT NULL PRIMARY KEY,
+    user_id uuid NOT NULL
 );

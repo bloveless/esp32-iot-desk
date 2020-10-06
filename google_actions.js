@@ -9,6 +9,18 @@ mqtt_client.on('connect', () => {
     console.log('Connected to mqtt');
 });
 
+const updateHeight = {
+    "preset one": (deviceId) => {
+        mqtt_client.publish(`/esp32_iot_desk/${deviceId}/command`, "1");
+    },
+    "preset two": (deviceId) => {
+        mqtt_client.publish(`/esp32_iot_desk/${deviceId}/command`, "2");
+    },
+    "preset three": (deviceId) => {
+        mqtt_client.publish(`/esp32_iot_desk/${deviceId}/command`, "3");
+    },
+};
+
 const google_actions_app = smarthome({
     debug: true,
 });
@@ -116,12 +128,8 @@ google_actions_app.onExecute(async (body, headers) => {
                     const newHeight = execute.params.updateModeSettings.height;
                     commandResponse.states.height = newHeight;
                     deviceIds.forEach(deviceId => {
-                        if (newHeight === "preset one") {
-                            mqtt_client.publish(`/esp32_iot_desk/${deviceId}/command`, "1");
-                        } else if (newHeight === "preset two") {
-                            mqtt_client.publish(`/esp32_iot_desk/${deviceId}/command`, "2");
-                        } else if (newHeight === "preset three") {
-                            mqtt_client.publish(`/esp32_iot_desk/${deviceId}/command`, "3");
+                        if (newHeight in updateHeight) {
+                            updateHeight[newHeight](deviceId);
                         }
                     });
                 }

@@ -11,8 +11,6 @@ const model = require("./model");
 const { getVariablesForAuthorization, getQueryStringForLogin } = require("./util");
 const port = process.env.PORT || 3000;
 
-// http://localhost:3000/oauth/authorize?response_type=code&client_id=eb47ecec86884e029ac626bd5de45d92&redirect_uri=https://oauth-redirect.googleusercontent.com/r/esp32-iot-desk-b8329&state=ABdO3MUUq0VpbQzyH7c957nhSkOG_dwUUNFhlpX6yS4Z4ef_yxn3EtlYs2F5es-PLUnaW-IwjYbG6lG8UiRhQZKPNr6ggVqwW_ETWkI_-oonK2GgnEXX6C2_p9D1wZ1JbXY3qHnCE8B75z_0HzfX9SbBB1rsht3u-WfIK_yhEYXEYDBA13_kcg7vqmy0bUjC-HdDG0aIu1h73cH9wSARiT5YUn2gutfz1yBR0PdLzTIw5k4RxZv4EvJ4syI_jaGEnHW1d-HKPHn1tYNf_NbjIPA_Vg0eKRng36qLqcgcQnz1wrjfCntTdS4zZiV7qvtIBP1vtFWeur3RBImWxUMMEEVqwDAvlUmTshx4g-jp4HC_8WW12YV8uvxSEcImP_Zk47MkYeeRnUpDeFmEQCCsrwSpg2I3ptuORc49HZd2hp5uNebJ8UQRYZsKLf7wS-kh3w61_vj-jRjfy-u4UChx8J2Rvzc_Vr0TEkTPcgZ9iwgp8fdSLw2DUEhy-GkpRor-7f4QZaV7r62COvC7kcRulCIdvFqkWNVIoQDZrI1BbNNXtiZ7T6QjctPssfltaTGklAo8eDpZiWDAPIG7IAtsHXYIj6MnPlTuC3LupGkyWYhC6EFIqekdkWpoN3i4i5mFD4Jje3OpWX6bnJC9HMddbJ4K0wU_5lUtFA&user_locale=en
-
 // Create an Express application.
 const app = express();
 app.set("view engine", "pug");
@@ -85,11 +83,6 @@ app.post("/oauth/authorize", function (req, res) {
     return app.oauth.authorize();
 });
 
-
-app.get("/", (req, res) => {
-    return res.render("index", { loggedIn: !!req.session.user, userEmail: req.session.user?.email });
-});
-
 app.get("/log-in", (req, res) => {
     if (req.session.user) {
         return res.redirect(`/oauth/authorize?${getQueryStringForLogin(req)}`);
@@ -100,8 +93,7 @@ app.get("/log-in", (req, res) => {
 
 app.post("/log-in", async (req, res) => {
     if (req.session.user) {
-        // TODO: This should redirect to the authorization endpoint
-        return res.redirect("/");
+        return res.redirect(`/oauth/authorize?${getQueryStringForLogin(req)}`);
     }
 
     if (!req.body?.email) {
@@ -168,6 +160,12 @@ app.post("/sign-up", async (req, res) => {
 });
 
 app.post("/gaction/fulfillment", app.oauth.authenticate(), google_actions_app);
+
+app.get('/healthz', ((req, res) => {
+    res.json({
+        success: "true",
+    });
+}));
 
 app.listen(port, () => {
     console.log(`Example app listening at port ${port}`);
