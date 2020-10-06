@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const flash = require("express-flash-2");
 const session = require("express-session");
+const pgSession = require("connect-pg-simple");
 const morgan = require("morgan");
 
 const { google_actions_app } = require("./google_actions");
@@ -32,6 +33,9 @@ app.use(cookieParser(process.env.APP_KEY));
 
 // initialize express-session to allow us track the logged-in user across sessions.
 app.use(session({
+    store: new pgSession({
+        pool: model.pool,
+    }),
     key: "user_sid",
     secret: process.env.APP_KEY,
     resave: false,

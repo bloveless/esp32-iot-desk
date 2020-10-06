@@ -8,6 +8,8 @@ const pool = new Pool({
     connectionString: process.env.DATABASE_URL
 });
 
+module.exports.pool = pool;
+
 module.exports.getAccessToken = (bearerToken) => {
     return pool.query(
         `
