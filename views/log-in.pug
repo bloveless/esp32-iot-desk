@@ -14,5 +14,5 @@ block content
         label(for="inputPassword" class="sr-only") Password
         input(type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required)
         button.btn.btn-lg.btn-primary.btn-block(type="submit") Log in
-        a(href=`/sign-up?client_id=${clientId}&redirect_uri=${redirectUri}&redirect=${redirect}&state=${state}`) Create an account
+        a(href=`/sign-up?${signUpQueryString}`) Create an account
         p.mt-5.mb-3.text-muted &copy; #{new Date().getFullYear()}

@@ -88,7 +88,10 @@ app.get("/log-in", (req, res) => {
         return res.redirect(`/oauth/authorize?${getQueryStringForLogin(req)}`);
     }
 
-    res.render("log-in", getVariablesForAuthorization(req));
+    res.render("log-in", {
+        ...getVariablesForAuthorization(req),
+        ...{ signUpQueryString: getQueryStringForLogin(req) },
+    });
 });
 
 app.post("/log-in", async (req, res) => {
@@ -102,6 +105,7 @@ app.post("/log-in", async (req, res) => {
                 error: "Email address is required"
             },
             ...getVariablesForAuthorization(req),
+            ...{ signUpQueryString: getQueryStringForLogin(req) },
         });
     }
 
@@ -111,6 +115,7 @@ app.post("/log-in", async (req, res) => {
                 error: "Password is required"
             },
             ...getVariablesForAuthorization(req),
+            ...{ signUpQueryString: getQueryStringForLogin(req) },
         });
     }
 

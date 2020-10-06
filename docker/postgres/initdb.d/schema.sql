@@ -16,14 +16,6 @@ SET client_min_messages = warning;
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
 SET search_path = public, pg_catalog;
 
 SET default_tablespace = '';
@@ -70,9 +62,10 @@ CREATE TABLE oauth_clients
 ALTER TABLE ONLY oauth_clients
     ADD CONSTRAINT oauth_clients_pkey PRIMARY KEY (client_id, client_secret);
 
-INSERT INTO oauth_clients (client_id, client_secret, redirect_uri)
-VALUES ('eb47ecec86884e029ac626bd5de45d92', '784bcfc776104cac85145ba834c30020',
-        'https://oauth-redirect.googleusercontent.com/r/esp32-iot-desk-b8329');
+-- TODO: Uncomment this to add the google client back
+-- INSERT INTO oauth_clients (client_id, client_secret, redirect_uri)
+-- VALUES ('eb47ecec86884e029ac626bd5de45d92', '784bcfc776104cac85145ba834c30020',
+--         'https://oauth-redirect.googleusercontent.com/r/esp32-iot-desk-b8329');
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users
@@ -89,3 +82,6 @@ CREATE TABLE devices
     id      uuid NOT NULL PRIMARY KEY,
     user_id uuid NOT NULL
 );
+
+-- TODO: Uncomment this to insert the device so it is the same between local and remote
+-- INSERT INTO devices (id, user_id) VALUES ('77078ff2-0684-11eb-a8e7-0242ac130002', 'a906dfb0-05aa-11eb-b8d0-0242ac130002');
