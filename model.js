@@ -11,16 +11,16 @@ const pool = new Pool({
 module.exports.getAccessToken = (bearerToken) => {
     return pool.query(
         `
-            SELECT
-                 access_token
-                ,access_token_expires_at
-                ,client_id
-                ,refresh_token
-                ,refresh_token_expires_at
-                ,user_id
-            FROM oauth_tokens
-            WHERE access_token = $1
-                AND revoked = false;
+        SELECT
+             access_token
+            ,access_token_expires_at
+            ,client_id
+            ,refresh_token
+            ,refresh_token_expires_at
+            ,user_id
+        FROM oauth_tokens
+        WHERE access_token = $1
+            AND revoked = false;
         `,
         [bearerToken]
     ).then(function (result) {
@@ -77,22 +77,22 @@ module.exports.getClient = (clientId, clientSecret) => {
 module.exports.getRefreshToken = (bearerToken) => {
     return pool.query(
         `
-            SELECT
-                 ot.access_token
-                ,ot.access_token_expires_at
-                ,c.client_id
-                ,c.redirect_uri
-                ,ot.refresh_token
-                ,ot.refresh_token_expires_at
-                ,u.id as user_id
-                ,u.email as user_email
-            FROM oauth_tokens ot
-            INNER JOIN users u
-                ON u.id = ot.user_id
-            INNER JOIN oauth_clients c
-                on c.client_id = ot.client_id
-            WHERE refresh_token = $1
-                AND revoked = false;
+        SELECT
+             ot.access_token
+            ,ot.access_token_expires_at
+            ,c.client_id
+            ,c.redirect_uri
+            ,ot.refresh_token
+            ,ot.refresh_token_expires_at
+            ,u.id as user_id
+            ,u.email as user_email
+        FROM oauth_tokens ot
+        INNER JOIN users u
+            ON u.id = ot.user_id
+        INNER JOIN oauth_clients c
+            on c.client_id = ot.client_id
+        WHERE refresh_token = $1
+            AND revoked = false;
         `,
         [bearerToken]
     ).then(function (result) {
@@ -123,12 +123,12 @@ module.exports.getUser = (email, password) => {
     const hashedPassword = crypto.createHash("sha256").update(password).digest("hex");
     return pool.query(
         `
-            SELECT
-                 id
-                ,email
-            FROM users
-            WHERE email = $1
-            AND password = $2;
+        SELECT
+             id
+            ,email
+        FROM users
+        WHERE email = $1
+        AND password = $2;
         `,
         [email, hashedPassword]
     ).then((result) => result.rowCount ? result.rows[0] : false);
@@ -137,14 +137,14 @@ module.exports.getUser = (email, password) => {
 module.exports.getUserFromAccessToken = (token) => {
     return pool.query(
         `
-            SELECT
-                 u.id
-                ,u.email
-            FROM users u
-            INNER JOIN oauth_tokens ot
-                ON ot.user_id = u.id
-            WHERE ot.access_token = $1
-                AND ot.revoked = false;
+        SELECT
+             u.id
+            ,u.email
+        FROM users u
+        INNER JOIN oauth_tokens ot
+            ON ot.user_id = u.id
+        WHERE ot.access_token = $1
+            AND ot.revoked = false;
         `,
         [token]
     ).then((result) => {
@@ -164,11 +164,11 @@ module.exports.getUserFromAccessToken = (token) => {
 module.exports.getDevicesFromUserId = (userId) => {
     return pool.query(
         `
-            SELECT
-                 id
-                ,user_id
-            FROM devices
-            WHERE user_id = $1;
+        SELECT
+             id
+            ,user_id
+        FROM devices
+        WHERE user_id = $1;
         `,
         [userId]
     ).then((results) => {
@@ -186,12 +186,13 @@ module.exports.getDevicesFromUserId = (userId) => {
 module.exports.getDevicesByUserIdAndIds = (userId, deviceIds) => {
     return pool.query(
         `
-            SELECT
-                 id
-                ,user_id
-            FROM devices
-            WHERE user_id = $1
-                AND devices.id = ANY ($2);
+        SELECT
+             id
+            ,user_id
+            ,current_height
+        FROM devices
+        WHERE user_id = $1
+            AND devices.id = ANY ($2);
         `,
         [userId, deviceIds]
     ).then((results) => {
@@ -199,6 +200,7 @@ module.exports.getDevicesByUserIdAndIds = (userId, deviceIds) => {
             return results.rows.map((row) => ({
                 id: row.id,
                 userId: row.user_id,
+                currentHeight: row.current_height
             }));
         }
 
@@ -206,22 +208,57 @@ module.exports.getDevicesByUserIdAndIds = (userId, deviceIds) => {
     })
 };
 
+module.exports.setDeviceHeight = (userId, deviceId, newCurrentHeight) => {
+    return pool.query(
+        `
+        UPDATE d
+        SET current_height = $1
+        FROM devices d
+        INNER JOIN users u
+            ON d.user_id = u.id
+        WHERE d.id = $2
+            AND u.id = $3
+        RETURNING
+             u.id AS user_id
+            ,d.id AS device_id
+            ,d.current_height
+        `,
+        [
+            newCurrentHeight,
+            deviceId,
+            userId
+        ]
+    ).then((result) => {
+        if (result.rowCount) {
+            const row = result.rows[0];
+
+            return {
+                userId: row.user_id,
+                deviceId: row.device_id,
+                currentHeight: row.current_height
+            };
+        }
+
+        return false;
+    });
+};
+
 module.exports.createUser = (email, password) => {
     const hashedPassword = crypto.createHash("sha256").update(password).digest("hex");
     return pool.query(
         `
-            INSERT INTO users(
-                 id
-                ,email
-                ,password
-            ) VALUES (
-                uuid_generate_v1(),
-                $1,
-                $2
-            )
-            RETURNING
-                 id
-                ,email;
+        INSERT INTO users(
+             id
+            ,email
+            ,password
+        ) VALUES (
+            uuid_generate_v1(),
+            $1,
+            $2
+        )
+        RETURNING
+             id
+            ,email;
         `,
         [email, hashedPassword]
     ).then(function (result) {
@@ -232,30 +269,30 @@ module.exports.createUser = (email, password) => {
 module.exports.saveToken = (token, client, user) => {
     return pool.query(
             `
-            INSERT INTO oauth_tokens(
-                 id
-                ,access_token
-                ,access_token_expires_at
-                ,client_id
-                ,refresh_token
-                ,refresh_token_expires_at
-                ,user_id
-            ) VALUES (
-                 uuid_generate_v1()
-                ,$1
-                ,$2
-                ,$3
-                ,$4
-                ,$5
-                ,$6
-            )
-            RETURNING
-                 access_token
-                ,access_token_expires_at
-                ,client_id
-                ,refresh_token
-                ,refresh_token_expires_at
-                ,user_id;
+        INSERT INTO oauth_tokens(
+             id
+            ,access_token
+            ,access_token_expires_at
+            ,client_id
+            ,refresh_token
+            ,refresh_token_expires_at
+            ,user_id
+        ) VALUES (
+             uuid_generate_v1()
+            ,$1
+            ,$2
+            ,$3
+            ,$4
+            ,$5
+            ,$6
+        )
+        RETURNING
+             access_token
+            ,access_token_expires_at
+            ,client_id
+            ,refresh_token
+            ,refresh_token_expires_at
+            ,user_id;
         `,
         [
             token.accessToken,
@@ -289,20 +326,20 @@ module.exports.saveToken = (token, client, user) => {
 
 module.exports.saveAuthorizationCode = (code, client, user) => {
     return pool.query(
-            `
-            INSERT INTO oauth_authorization_codes(
-                 id
-                ,authorization_code
-                ,expires_at
-                ,client_id
-                ,user_id
-            ) VALUES (
-                uuid_generate_v1(),
-                $1,
-                $2,
-                $3,
-                $4
-            );
+        `
+        INSERT INTO oauth_authorization_codes(
+             id
+            ,authorization_code
+            ,expires_at
+            ,client_id
+            ,user_id
+        ) VALUES (
+            uuid_generate_v1(),
+            $1,
+            $2,
+            $3,
+            $4
+        );
         `,
         [
             code.authorizationCode,
@@ -317,22 +354,22 @@ module.exports.saveAuthorizationCode = (code, client, user) => {
 
 module.exports.getAuthorizationCode = (code) => {
     return pool.query(
-            `
-            SELECT
-                 oac.id as id
-                ,oac.authorization_code as authorization_code
-                ,oc.client_id as client_id
-                ,u.id as user_id
-                ,u.email as user_email
-                ,oac.expires_at as expires_at
-                ,oc.redirect_uri as redirect_uri
-            FROM oauth_authorization_codes oac
-            INNER JOIN users u
-                ON oac.user_id = u.id
-            INNER JOIN oauth_clients oc
-                ON oac.client_id = oc.client_id
-            WHERE oac.authorization_code = $1
-                AND oac.revoked = false;
+        `
+        SELECT
+             oac.id as id
+            ,oac.authorization_code as authorization_code
+            ,oc.client_id as client_id
+            ,u.id as user_id
+            ,u.email as user_email
+            ,oac.expires_at as expires_at
+            ,oc.redirect_uri as redirect_uri
+        FROM oauth_authorization_codes oac
+        INNER JOIN users u
+            ON oac.user_id = u.id
+        INNER JOIN oauth_clients oc
+            ON oac.client_id = oc.client_id
+        WHERE oac.authorization_code = $1
+            AND oac.revoked = false;
         `,
         [code]
     ).then((results) => {
@@ -362,10 +399,10 @@ module.exports.getAuthorizationCode = (code) => {
 module.exports.revokeAuthorizationCode = (code) => {
     return pool.query(
         `
-            UPDATE oauth_authorization_codes
-                SET revoked = true
-            WHERE id = $1
-                AND revoked = false;
+        UPDATE oauth_authorization_codes
+            SET revoked = true
+        WHERE id = $1
+            AND revoked = false;
         `,
         [code.id]
     ).then(() => {
@@ -376,9 +413,9 @@ module.exports.revokeAuthorizationCode = (code) => {
 module.exports.revokeToken = (code) => {
     return pool.query(
         `
-            UPDATE oauth_tokens
-                SET revoked = true
-            WHERE refresh_token = $1;
+        UPDATE oauth_tokens
+            SET revoked = true
+        WHERE refresh_token = $1;
         `,
         [code.refreshToken]
     ).then(() => {

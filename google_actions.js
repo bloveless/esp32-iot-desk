@@ -96,7 +96,7 @@ google_actions_app.onQuery(async (body, headers) => {
     const devices = await model.getDevicesByUserIdAndIds(user.id, deviceIds);
 
     const formattedDevices = devices.reduce((accumulator, device) => {
-        return {...accumulator, ...{[device.id]: { height: "preset one"}}};
+        return {...accumulator, ...{[device.id]: { height: device.currentHeight}}};
     }, {});
 
     return {
@@ -130,6 +130,8 @@ google_actions_app.onExecute(async (body, headers) => {
                     deviceIds.forEach(deviceId => {
                         if (newHeight in updateHeight) {
                             updateHeight[newHeight](deviceId);
+
+                            model.setDeviceHeight(user.id, deviceId, newHeight);
                         }
                     });
                 }

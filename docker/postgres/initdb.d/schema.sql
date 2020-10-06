@@ -80,8 +80,9 @@ CREATE INDEX users_email_password ON users USING btree (email, password);
 CREATE TABLE devices
 (
     id      uuid NOT NULL PRIMARY KEY,
-    user_id uuid NOT NULL
+    user_id uuid NOT NULL,
+    current_height text NOT NULL
 );
 
 -- TODO: Uncomment this to insert the device so it is the same between local and remote
--- INSERT INTO devices (id, user_id) VALUES ('77078ff2-0684-11eb-a8e7-0242ac130002', 'a906dfb0-05aa-11eb-b8d0-0242ac130002');
+-- INSERT INTO devices (id, user_id, current_height) VALUES ('77078ff2-0684-11eb-a8e7-0242ac130002', 'a906dfb0-05aa-11eb-b8d0-0242ac130002', 'preset one');
