@@ -1,7 +1,3 @@
-/**
- * Module dependencies.
- */
-
 const { Pool } = require("pg");
 const crypto = require("crypto");
 const pool = new Pool({
@@ -265,7 +261,7 @@ module.exports.createUser = (email, password) => {
     ).then(function (result) {
         return result.rowCount ? result.rows[0] : false;
     });
-}
+};
 
 module.exports.saveToken = (token, client, user) => {
     return pool.query(
@@ -351,7 +347,7 @@ module.exports.saveAuthorizationCode = (code, client, user) => {
     ).then(() => {
         return code;
     });
-}
+};
 
 module.exports.getAuthorizationCode = (code) => {
     return pool.query(
@@ -395,7 +391,7 @@ module.exports.getAuthorizationCode = (code) => {
 
         return false;
     });
-}
+};
 
 module.exports.revokeAuthorizationCode = (code) => {
     return pool.query(
@@ -409,7 +405,7 @@ module.exports.revokeAuthorizationCode = (code) => {
     ).then(() => {
         return true;
     });
-}
+};
 
 module.exports.revokeToken = (code) => {
     return pool.query(
@@ -422,4 +418,4 @@ module.exports.revokeToken = (code) => {
     ).then(() => {
         return true;
     });
-}
+};

@@ -21,12 +21,13 @@ services:
       - 1883:1883
 
   server:
+    image: bloveless/esp32-iot-server:0.0.2
     build:
       context: .
       dockerfile: ./docker/server/Dockerfile
     environment:
       DATABASE_URL: "postgres://esp32_iot_desk:89AU0GOS2tWhgz274V1mG6gg88nPws@postgres:5432/esp32_iot_desk"
-      CLOUDMQTT_URL: "mqtt://mosquitto"
+      MQTT_URL: "mqtt://mosquitto"
     command: "npm run dev"
     ports:
       - 3000:3000

@@ -1,0 +1,16 @@
+namespace: esp32-iot-server
+
+commonLabels:
+  app: esp32-iot-server
+
+resources:
+  - namespace.yaml
+  - ingress.yaml
+  - service.yaml
+  - deployment.yaml
+
+secretGenerator:
+  - name: environment-keys
+    env: secrets.env
+    type: Opaque
+

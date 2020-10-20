@@ -12,4 +12,4 @@ RUN npm install
 
 COPY . /home/node/app
 
-CMD "npm start"
+CMD ["npm", "start"]

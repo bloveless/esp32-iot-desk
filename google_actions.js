@@ -1,6 +1,6 @@
 const { smarthome } = require('actions-on-google');
 const mqtt = require('mqtt');
-const mqtt_client = mqtt.connect(process.env.CLOUDMQTT_URL);
+const mqtt_client = mqtt.connect(process.env.MQTT_URL);
 
 const model = require('./model');
 const { getTokenFromHeader } = require('./util');
