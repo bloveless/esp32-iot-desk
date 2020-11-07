@@ -16,13 +16,15 @@ spec:
     spec:
       containers:
       - name: express
-        image: bloveless/esp32-iot-server:0.0.2
+        image: bloveless/esp32-iot-server:0.0.4
         env:
         - name: APP_KEY
           valueFrom:
             secretKeyRef:
               name: environment-keys
               key: APP_KEY
+        - name: APP_DEBUG
+          value: "true"
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:

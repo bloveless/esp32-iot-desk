@@ -1,4 +1,6 @@
-FROM node:14.11-stretch
+FROM node:14.14.0-buster-slim
+
+RUN npm install -g npm
 
 RUN mkdir -p /home/node/app && chown -R node:node /home/node
 

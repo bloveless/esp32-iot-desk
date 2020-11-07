@@ -20,7 +20,7 @@ app.use(morgan("dev"));
 // Add OAuth server.
 app.oauth = new OAuth2Server({
     model,
-    debug: true,
+    debug: (process.env.APP_DEBUG === "true"),
 });
 
 // Add body parser.

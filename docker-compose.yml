@@ -21,7 +21,7 @@ services:
       - 1883:1883
 
   server:
-    image: bloveless/esp32-iot-server:0.0.2
+    image: bloveless/esp32-iot-server:0.0.4
     build:
       context: .
       dockerfile: ./docker/server/Dockerfile
