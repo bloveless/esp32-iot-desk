@@ -63,9 +63,9 @@ ALTER TABLE ONLY oauth_clients
     ADD CONSTRAINT oauth_clients_pkey PRIMARY KEY (client_id, client_secret);
 
 -- TODO: Uncomment this to add the google client back
--- INSERT INTO oauth_clients (client_id, client_secret, redirect_uri)
--- VALUES ('eb47ecec86884e029ac626bd5de45d92', '784bcfc776104cac85145ba834c30020',
---         'https://oauth-redirect.googleusercontent.com/r/esp32-iot-desk-b8329');
+INSERT INTO oauth_clients (client_id, client_secret, redirect_uri)
+VALUES ('eb47ecec86884e029ac626bd5de45d92', '784bcfc776104cac85145ba834c30020',
+        'https://oauth-redirect.googleusercontent.com/r/esp32-iot-desk-b8329');
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users
@@ -77,6 +77,7 @@ CREATE TABLE users
 
 CREATE INDEX users_email_password ON users USING btree (email, password);
 
+DROP TABLE IF EXISTS devices;
 CREATE TABLE devices
 (
     id      uuid NOT NULL PRIMARY KEY,
@@ -86,3 +87,15 @@ CREATE TABLE devices
 
 -- TODO: Uncomment this to insert the device so it is the same between local and remote
 -- INSERT INTO devices (id, user_id, current_height) VALUES ('77078ff2-0684-11eb-a8e7-0242ac130002', 'a906dfb0-05aa-11eb-b8d0-0242ac130002', 'preset one');
+
+DROP TABLE IF EXISTS "session";
+CREATE TABLE "session" (
+  "sid" varchar NOT NULL COLLATE "default",
+  "sess" json NOT NULL,
+  "expire" timestamp(6) NOT NULL
+)
+WITH (OIDS=FALSE);
+
+ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+CREATE INDEX "IDX_session_expire" ON "session" ("expire");

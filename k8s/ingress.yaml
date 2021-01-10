@@ -4,15 +4,14 @@ metadata:
   name: esp32-iot-server-service
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    acme.cert-manager.io/http01-edit-in-place: "true"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
-  ingressClassName: nginx
   tls:
     - hosts:
-        - esp32-iot-server.brennonloveless.com
+        - esp32iotserver.ddns.net
       secretName: esp32-iot-server-crt
   rules:
-    - host: esp32-iot-server.brennonloveless.com
+    - host: esp32iotserver.ddns.net
       http:
         paths:
           - path: /

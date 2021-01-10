@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: express
-        image: bloveless/esp32-iot-server:0.0.4
+        image: bloveless/esp32-iot-server:0.0.5
         env:
         - name: APP_KEY
           valueFrom:
